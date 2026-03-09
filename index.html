@@ -39,7 +39,10 @@
             // Camera
             const camera = document.getElementById("camera");
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
+                navigator.mediaDevices.getUserMedia({
+                    video: {facingMode: {ideal: 'environment'}, width: {ideal: 1920}, height: {ideal: 1080}},
+                    audio: true
+                })
                     .then(function (stream) {
                         const video = document.createElement("video");
                         video.srcObject = stream;
