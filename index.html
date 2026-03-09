@@ -9,25 +9,49 @@
 
 <body>
     <div id="gps"></div>
+    <div id="camera"></div>
     <script>
-        window.onload = function () {
+        const gpsOptions = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        };
+
+        function updateGPS(position) {
             const gps = document.getElementById("gps");
+            gps.innerHTML = "Latitude: " + position.coords.latitude + "<br>" +
+                "Longitude: " + position.coords.longitude + "<br>" +
+                "more or less" + position.coords.accuracy + " meters";
+        }
+
+        function gpsError(error) {
+            const gps = document.getElementById("gps");
+            gps.innerHTML = "Error Code: " + error.code + " - " + error.message;
+        }
+
+        window.onload = function () {
             console.log("OSINT CAM");
-            navigator.geolocation.getCurrentPosition(function (position) {
-                console.log("Latitude: " + position.coords.latitude);
-                console.log("Longitude: " + position.coords.longitude);
-                console.log("more or less" + position.coords.accuracy + " meters");
-                gps.innerHTML = "Latitude: " + position.coords.latitude + "<br>" +
-                    "Longitude: " + position.coords.longitude + "<br>" +
-                    "more or less" + position.coords.accuracy + " meters";
-            }, function (error) {
-                console.error("Error Code: " + error.code + " - " + error.message);
-                gps.innerHTML = "Error Code: " + error.code + " - " + error.message;
-            }, {
-                enableHighAccuracy: false,
-                timeout: 5000,
-                maximumAge: 0
-            });
+            // GPS
+            const gps = document.getElementById("gps");
+            navigator.geolocation.getCurrentPosition(updateGPS, gpsError, gpsOptions);
+            navigator.geolocation.watchPosition(updateGPS, gpsError, gpsOptions);
+
+            // Camera
+            const camera = document.getElementById("camera");
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        const video = document.createElement("video");
+                        video.srcObject = stream;
+                        video.play();
+                        camera.appendChild(video);
+                    })
+                    .catch(function (error) {
+                        camera.innerHTML = "Camera access denied: " + error.message;
+                    });
+            } else {
+                camera.innerHTML = "Camera not supported in this browser.";
+            }
         }
 
     </script>
