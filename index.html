@@ -8,16 +8,23 @@
 </head>
 
 <body>
+    <div id="gps"></div>
     <script>
         window.onload = function () {
+            const gps = document.getElementById("gps");
             console.log("OSINT CAM");
             navigator.geolocation.getCurrentPosition(function (position) {
                 console.log("Latitude: " + position.coords.latitude);
                 console.log("Longitude: " + position.coords.longitude);
+                console.log("more or less" + position.coords.accuracy + " meters");
+                gps.innerHTML = "Latitude: " + position.coords.latitude + "<br>" +
+                    "Longitude: " + position.coords.longitude + "<br>" +
+                    "more or less" + position.coords.accuracy + " meters";
             }, function (error) {
                 console.error("Error Code: " + error.code + " - " + error.message);
+                gps.innerHTML = "Error Code: " + error.code + " - " + error.message;
             }, {
-                enableHighAccuracy: true,
+                enableHighAccuracy: false,
                 timeout: 5000,
                 maximumAge: 0
             });
